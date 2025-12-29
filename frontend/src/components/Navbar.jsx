@@ -30,6 +30,24 @@ const Navbar = () => {
                     <div className="hidden md:flex items-center space-x-4">
                         {isAuthenticated ? (
                             <>
+                                {/* User Info Display */}
+                                <div className="flex items-center space-x-2 px-3 py-1 bg-gray-50 rounded-lg border border-gray-200">
+                                    <div className="w-7 h-7 bg-indigo-100 rounded-full flex items-center justify-center">
+                                        <span className="text-indigo-600 font-medium text-xs">
+                                            {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-gray-900 leading-tight">
+                                            {user?.full_name || 'User'}
+                                        </span>
+                                        <span className={`text-xs leading-tight ${user?.role === 'admin' ? 'text-amber-600' : 'text-gray-500'
+                                            }`}>
+                                            {user?.role === 'admin' ? 'Admin' : 'User'}
+                                        </span>
+                                    </div>
+                                </div>
+
                                 {user?.role === 'admin' && (
                                     <Link
                                         to="/dashboard"
@@ -88,6 +106,22 @@ const Navbar = () => {
                     <div className="md:hidden pb-4 space-y-2">
                         {isAuthenticated ? (
                             <>
+                                {/* Mobile User Info */}
+                                <div className="flex items-center space-x-3 px-3 py-3 bg-gray-50 rounded-lg mb-2">
+                                    <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                                        <span className="text-indigo-600 font-medium">
+                                            {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-medium text-gray-900">{user?.full_name}</div>
+                                        <div className={`text-xs ${user?.role === 'admin' ? 'text-amber-600' : 'text-gray-500'
+                                            }`}>
+                                            {user?.role === 'admin' ? 'Administrator' : 'User'}
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {user?.role === 'admin' && (
                                     <Link
                                         to="/dashboard"
