@@ -164,14 +164,24 @@ Purple_Merit/
 ### Backend (Render)
 1. Create PostgreSQL database on Render
 2. Create Web Service with:
-   - Build: `pip install -r requirements.txt && python manage.py migrate`
-   - Start: `gunicorn config.wsgi:application`
-3. Set environment variables
+   - **Root Directory:** `backend`
+   - **Build Command:** `pip install -r requirements.txt && python manage.py migrate && python manage.py create_admin`
+   - **Start Command:** `gunicorn config.wsgi:application`
+3. Set environment variables:
+   | Variable | Value |
+   |----------|-------|
+   | `SECRET_KEY` | Your random secret key |
+   | `DATABASE_URL` | Internal Database URL from Render PostgreSQL |
+   | `PYTHON_VERSION` | `3.10.0` |
+   | `ADMIN_EMAIL` | `admin@test.com` |
+   | `ADMIN_PASSWORD` | `Admin123` |
+   | `ADMIN_NAME` | `Admin User` |
+   | `FRONTEND_URL` | Your Vercel URL (add after frontend deploy) |
 
 ### Frontend (Vercel)
 1. Import GitHub repo
 2. Set Root Directory to `frontend`
-3. Set `VITE_API_BASE_URL` environment variable
+3. Set `VITE_API_BASE_URL` = `https://your-backend.onrender.com/api`
 
 ---
 
