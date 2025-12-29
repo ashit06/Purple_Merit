@@ -1,8 +1,8 @@
 # PurpleMerit - User Management System
 
-[![Django CI](https://github.com/YOUR_USERNAME/Purple_Merit/actions/workflows/django.yml/badge.svg)](https://github.com/YOUR_USERNAME/Purple_Merit/actions/workflows/django.yml)
+[![Django CI](https://github.com/ashit06/Purple_Merit/actions/workflows/django.yml/badge.svg)](https://github.com/ashit06/Purple_Merit/actions/workflows/django.yml)
 
-🔗 **Live Demo:** [Frontend](https://your-app.vercel.app) | [Backend API](https://your-api.onrender.com)
+🔗 **Live Demo:** [Frontend](https://purplemerit.vercel.app) | [Backend API](https://purplemerit-backend.onrender.com)
 
 ---
 
@@ -16,8 +16,10 @@ PurpleMerit is a full-stack **User Management System** with Role-Based Access Co
 - ✅ Admin Dashboard with Server-Side Pagination
 - ✅ User Ban/Activate with Confirmation Modal
 - ✅ Protected Routes & RBAC on Frontend
+- ✅ Profile Edit & Change Password
 - ✅ Dockerized Deployment
 - ✅ CI/CD with GitHub Actions
+- ✅ 15 Unit Tests (100% Passing)
 
 ---
 
@@ -48,6 +50,7 @@ python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 python manage.py migrate
+python manage.py create_admin  # Creates admin@test.com / Admin123
 python manage.py runserver
 ```
 
@@ -78,6 +81,8 @@ docker-compose up --build
 | `DATABASE_URL` | PostgreSQL connection string |
 | `CORS_ALLOWED_ORIGINS` | Comma-separated allowed origins |
 | `FRONTEND_URL` | Vercel frontend URL |
+| `ADMIN_EMAIL` | Admin user email (for auto-creation) |
+| `ADMIN_PASSWORD` | Admin user password |
 
 ### Frontend (`frontend/.env`)
 | Variable | Description |
@@ -99,13 +104,41 @@ docker-compose up --build
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
 | GET | `/api/auth/profile/` | Get current user profile | User |
-| PUT | `/api/auth/profile/` | Update current user profile | User |
+| PUT | `/api/auth/profile/` | Update name/email | User |
+| POST | `/api/auth/profile/change-password/` | Change password | User |
 
 ### Admin Endpoints
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
 | GET | `/api/auth/admin/users/` | List all users (paginated) | Admin |
 | PATCH | `/api/auth/admin/users/<uuid>/status/` | Toggle user active status | Admin |
+
+### Example Request/Response
+
+**Login:**
+```bash
+POST /api/auth/login/
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "Admin123"
+}
+```
+
+**Response:**
+```json
+{
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "user": {
+    "id": "uuid-string",
+    "email": "admin@test.com",
+    "full_name": "Admin User",
+    "role": "admin"
+  }
+}
+```
 
 ---
 
@@ -117,13 +150,22 @@ cd backend
 pytest -v
 ```
 
-### Test Coverage
+### Test Coverage (15 Tests)
 - ✅ User Registration & Password Hashing
 - ✅ JWT Login & Token Validation
-- ✅ RBAC Permission Enforcement
-- ✅ Server-Side Pagination
+- ✅ Weak Password Rejection
+- ✅ Invalid Credentials Handling
+- ✅ UUID Primary Key Verification
+- ✅ Admin Can List Users (Paginated)
+- ✅ Standard User Cannot Access Admin Endpoints
+- ✅ Unauthenticated Access Blocked
+- ✅ Pagination Limit (10 per page)
 - ✅ Admin Self-Ban Prevention
+- ✅ Admin Can Ban Other Users
 - ✅ Soft Delete Persistence
+- ✅ User Can View Own Profile
+- ✅ User Can Update Profile
+- ✅ Profile Requires Authentication
 
 ---
 
@@ -141,7 +183,14 @@ pytest -v
 Purple_Merit/
 ├── backend/
 │   ├── config/          # Django settings
-│   ├── users/           # User app (models, views, serializers)
+│   ├── users/           # User app (models, views, serializers, tests)
+│   │   ├── management/  # Custom management commands
+│   │   │   └── commands/create_admin.py
+│   │   ├── models.py    # CustomUser with UUID, email auth
+│   │   ├── views.py     # Auth, Admin, Profile endpoints
+│   │   ├── serializers.py
+│   │   ├── permissions.py  # IsAdminRole RBAC
+│   │   └── tests.py     # 15 unit tests
 │   ├── requirements.txt
 │   └── Dockerfile
 ├── frontend/
@@ -149,7 +198,7 @@ Purple_Merit/
 │   │   ├── components/  # Navbar, ProtectedRoute, Modal
 │   │   ├── context/     # AuthContext
 │   │   ├── pages/       # Login, Signup, Profile, Dashboard
-│   │   └── utils/       # axiosInstance
+│   │   └── utils/       # axiosInstance with interceptors
 │   ├── vercel.json
 │   └── Dockerfile
 ├── docker-compose.yml
@@ -182,6 +231,12 @@ Purple_Merit/
 1. Import GitHub repo
 2. Set Root Directory to `frontend`
 3. Set `VITE_API_BASE_URL` = `https://your-backend.onrender.com/api`
+
+---
+
+## 🎥 Demo Video
+
+[Walkthrough Video Link](YOUR_VIDEO_LINK_HERE)
 
 ---
 

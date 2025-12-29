@@ -8,6 +8,7 @@ const Signup = () => {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -15,9 +16,39 @@ const Signup = () => {
     const { register } = useAuth();
     const navigate = useNavigate();
 
+    // Client-side validation
+    const validateForm = () => {
+        if (!fullName.trim()) {
+            setError('Full name is required');
+            return false;
+        }
+        if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            setError('Please enter a valid email address');
+            return false;
+        }
+        if (password.length < 8) {
+            setError('Password must be at least 8 characters');
+            return false;
+        }
+        if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+            setError('Password must contain letters and numbers');
+            return false;
+        }
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            return false;
+        }
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        if (!validateForm()) {
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -57,7 +88,7 @@ const Signup = () => {
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
                             <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
-                                Full Name
+                                Full Name <span className="text-red-500">*</span>
                             </label>
                             <div className="relative">
                                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -75,7 +106,7 @@ const Signup = () => {
 
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                Email
+                                Email <span className="text-red-500">*</span>
                             </label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -93,7 +124,7 @@ const Signup = () => {
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                                Password
+                                Password <span className="text-red-500">*</span>
                             </label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -118,6 +149,30 @@ const Signup = () => {
                             <p className="mt-1 text-xs text-gray-500">
                                 Min 8 characters with letters and numbers
                             </p>
+                        </div>
+
+                        <div>
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                                Confirm Password <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                <input
+                                    id="confirmPassword"
+                                    type={showPassword ? 'text' : 'password'}
+                                    required
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className={`block w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${confirmPassword && password !== confirmPassword
+                                            ? 'border-red-300 bg-red-50'
+                                            : 'border-gray-300'
+                                        }`}
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                            {confirmPassword && password !== confirmPassword && (
+                                <p className="mt-1 text-xs text-red-500">Passwords do not match</p>
+                            )}
                         </div>
 
                         {error && (
