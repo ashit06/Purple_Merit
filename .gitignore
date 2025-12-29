@@ -1,0 +1,48 @@
+# Python / Django
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+db.sqlite3
+*.log
+.Python
+*.egg-info/
+.eggs/
+*.egg
+.mypy_cache/
+.pytest_cache/
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Node / React
+node_modules/
+dist/
+build/
+.cache/
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+*.bak
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml
+
+# Static files (collected)
+staticfiles/
