@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,6 +13,7 @@ from .serializers import (
     UserListSerializer,
     UserStatusSerializer,
     UserProfileSerializer,
+    ChangePasswordSerializer,
     get_tokens_for_user
 )
 
@@ -47,10 +49,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
     Extended token serializer to include user role in response.
     Frontend needs role for RBAC routing decisions.
+    Updates last_login timestamp for audit trail.
     """
     
     def validate(self, attrs: dict) -> dict:
         data = super().validate(attrs)
+        
+        # Update last_login for user activity tracking
+        self.user.last_login = timezone.now()
+        self.user.save(update_fields=['last_login'])
         
         data['user'] = {
             'id': str(self.user.id),
@@ -117,7 +124,7 @@ class UserStatusUpdateView(generics.UpdateAPIView):
 
 
 # =============================================================================
-# USER PROFILE VIEW
+# USER PROFILE VIEWS
 # =============================================================================
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
@@ -132,3 +139,23 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         # Returns the authenticated user's own record
         return self.request.user
+
+
+class ChangePasswordView(generics.GenericAPIView):
+    """
+    Change password for authenticated users.
+    Requires old password verification for security.
+    """
+    
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        
+        return Response(
+            {'detail': 'Password changed successfully.'},
+            status=status.HTTP_200_OK
+        )

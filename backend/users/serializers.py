@@ -102,3 +102,32 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['id', 'email', 'full_name', 'role', 'is_active', 'date_joined']
         read_only_fields = ['id', 'role', 'is_active', 'date_joined']
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Handles password change with old password verification.
+    Ensures users can only change their own password.
+    """
+    
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True, min_length=8)
+    
+    def validate_old_password(self, value: str) -> str:
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError('Current password is incorrect')
+        return value
+    
+    def validate_new_password(self, value: str) -> str:
+        if not re.search(r'[A-Za-z]', value):
+            raise serializers.ValidationError('Password must contain at least one letter')
+        if not re.search(r'\d', value):
+            raise serializers.ValidationError('Password must contain at least one number')
+        return value
+    
+    def save(self):
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
+        return user
