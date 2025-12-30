@@ -2,7 +2,7 @@
 
 [![Django CI](https://github.com/ashit06/Purple_Merit/actions/workflows/django.yml/badge.svg)](https://github.com/ashit06/Purple_Merit/actions/workflows/django.yml)
 
-🔗 **Live Demo:** [Frontend](https://purplemerit.vercel.app) | [Backend API](https://purplemerit-backend.onrender.com)
+🔗 **Live Demo:** [Frontend](https://purple-merit-red.vercel.app) | [Backend API](https://purplemerit-backend.onrender.com)
 
 ---
 
